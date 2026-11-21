@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Schach</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="online.css">
+  <link rel="stylesheet" href="online-game.css">
 </head>
 <body>
   <!-- Anmelden -->
@@ -54,6 +56,41 @@
     </div>
     <button id="btn-online" type="button">🌍 Online spielen</button>
     <p id="menu-note" class="hint"></p>
+  </main>
+
+  <!-- Online -->
+  <main id="screen-online" class="screen card hidden">
+    <div class="topbar">
+      <button id="online-back" type="button">← Zurück</button>
+      <h1>🌍 Online spielen</h1>
+    </div>
+    <p id="online-lock" class="online-lock hidden" role="status"></p>
+    <p id="online-error" class="error" role="alert"></p>
+
+    <section class="online-section">
+      <h2>Laufende Partien</h2>
+      <ul id="online-games" class="online-list"></ul>
+      <p id="online-games-empty" class="hint">Du spielst gerade keine Partie.</p>
+    </section>
+
+    <section class="online-section">
+      <h2>Einladungen an mich</h2>
+      <ul id="online-incoming" class="online-list"></ul>
+      <p id="online-incoming-empty" class="hint">Keine Einladungen.</p>
+    </section>
+
+    <section class="online-section">
+      <h2>Meine Einladungen</h2>
+      <ul id="online-outgoing" class="online-list"></ul>
+      <p id="online-outgoing-empty" class="hint">Du hast niemanden eingeladen.</p>
+    </section>
+
+    <section class="online-section">
+      <h2>Spieler</h2>
+      <p class="hint">Tippe auf einen Namen, um jemanden einzuladen.</p>
+      <ul id="online-players" class="online-list"></ul>
+      <p id="online-players-empty" class="hint">Es gibt noch keine anderen Spieler.</p>
+    </section>
   </main>
 
   <!-- Spiel -->
@@ -124,5 +161,7 @@
   <script src="rules.js"></script>
   <script src="pieces.js"></script>
   <script src="app.js"></script>
+  <script src="online.js"></script>
+  <script src="online-game.js"></script>
 </body>
 </html>

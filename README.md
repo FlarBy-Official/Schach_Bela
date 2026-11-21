@@ -28,3 +28,10 @@ Die Seite in `docs/` läuft komplett im Browser. Konten, Einstellungen und Spiel
 (Schema und Regeln: `supabase.sql`). Voraussetzung im Supabase-Dashboard:
 Authentication → Providers → Email → "Confirm email" ausschalten.
 Der Node-Server in `server/` wird online nicht mehr gebraucht.
+
+### Online spielen mit Freunden
+
+Einmalig im Supabase-SQL-Editor `supabase.sql` und danach `supabase-online.sql` ausführen.
+`node test-online.js` prüft die Datenbank-Funktionen (legt Testkonten `zz_a`, `zz_b`, `zz_c` an).
+Einladen über die Spielerliste, Farben werden gelost, keine Uhr. Ist der Gegner 3 Minuten weg,
+kann man die Partie als gewonnen werten; der Gegner kann dann 5 Minuten lang keine Einladungen annehmen.

@@ -1,0 +1,10 @@
+#online-controls { display: flex; flex-direction: column; gap: 8px; }
+.og-presence { font-size: .92em; color: #6b5f4d; display: flex; align-items: center; gap: 4px; }
+.og-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #b0a690; }
+.og-dot.on { background: var(--accent); }
+.og-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
+.og-buttons button:disabled { opacity: .6; cursor: default; }
+.og-offer { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 8px; border: 1px dashed #c9bda4; border-radius: 10px; background: #fff; }
+.og-offer-text { font-weight: 700; flex: 1 1 100%; }
+.og-claim { width: 100%; }
+.og-err { color: #b3261e; font-size: .85em; }

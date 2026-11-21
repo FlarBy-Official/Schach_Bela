@@ -22,7 +22,7 @@
     if (!session) return null;
     const { data, error } = await sb.from('profiles').select('name,is_owner,settings').eq('id', session.user.id).single();
     if (error) return null;
-    return { name: data.name, isOwner: !!data.is_owner, settings: data.settings || {} };
+    return { id: session.user.id, name: data.name, isOwner: !!data.is_owner, settings: data.settings || {} };
   }
   const must = ({ data, error }) => { if (error) throw new Error('Etwas ist schiefgegangen.'); return data; };
   const uid = async () => (await sb.auth.getSession()).data.session.user.id;
@@ -65,7 +65,7 @@
   }
 
   function show(id) {
-    for (const s of ['screen-auth', 'screen-menu', 'screen-game']) $(s).classList.toggle('hidden', s !== id);
+    for (const s of ['screen-auth', 'screen-menu', 'screen-online', 'screen-game']) $(s).classList.toggle('hidden', s !== id);
   }
 
   // ---------- Töne ----------
@@ -122,7 +122,7 @@
     show('screen-menu');
   }
 
-  $('menu-logout').onclick = async () => { await api('POST', '/api/logout'); stopEngine(); user = null; game = null; show('screen-auth'); };
+  $('menu-logout').onclick = async () => { await api('POST', '/api/logout'); stopEngine(); if (window.OnlineGame.leave) window.OnlineGame.leave(); user = null; game = null; show('screen-auth'); };
 
   // ---------- Einstellungen ----------
   function applySettings() {
@@ -158,9 +158,10 @@
   function startGame() {
     selected = null; magicOn = false; $('magic-on').checked = false; $('magic-tools').classList.add('hidden');
     document.body.classList.remove('magic-active');
+    $('g-new').classList.toggle('hidden', game.mode === 'online');
     show('screen-game');
     render();
-    save();
+    if (game.mode !== 'online') save();
     maybeEngineMove();
   }
   $('btn-local').onclick = () => newGame('local');
@@ -169,7 +170,7 @@
     if (c === 'r') c = Math.random() < 0.5 ? 'w' : 'b';
     newGame('cpu', $('cpu-level').value, c);
   };
-  $('btn-online').onclick = () => { $('menu-note').textContent = 'Leider noch nicht verfügbar.'; };
+  $('btn-online').onclick = () => window.Online.open();
   $('btn-resume').onclick = async () => {
     try {
       const g = await api('GET', '/api/game');
@@ -180,6 +181,11 @@
   };
   $('g-menu').onclick = async () => {
     stopEngine();
+    if (game && game.mode === 'online') {
+      window.OnlineGame.leave();
+      game = null;
+      return window.Online.open();
+    }
     const saved = await api('GET', '/api/game').catch(() => null);
     $('btn-resume').classList.toggle('hidden', !saved);
     show('screen-menu');
@@ -193,6 +199,11 @@
 
   function save() {
     if (!game) return;
+    if (game.mode === 'online') {
+      const { onlineId, player, ...data } = game;
+      window.OnlineGame.push({ ...data, snaps: [], onlineId, player });
+      return;
+    }
     if (game.over) { api('DELETE', '/api/game').catch(() => {}); return; }
     const copy = { ...game, snaps: game.snaps.slice(-40) };
     api('PUT', '/api/game', copy).catch(() => {});
@@ -265,6 +276,7 @@
       el.textContent = st.result === 'draw' ? `Unentschieden (${st.reason})` : `${who(st.result)} gewinnt! (${st.reason})`;
     } else {
       let t = `${who(game.state.turn)} ist dran`;
+      if (game.mode === 'online') t += game.state.turn === game.player ? ' (du)' : ` (${game.opponent || 'Gegner'})`;
       if (game.mode === 'cpu') t += game.state.turn === game.player ? ' (du)' : ' (Computer denkt…)';
       if (st.check) t += ' – Schach!';
       el.textContent = t;
@@ -286,6 +298,7 @@
   function humanCanMove() {
     if (!game || game.over) return false;
     if (magicOn) return true;
+    if (game.mode === 'online') return game.state.turn === game.player;
     if (game.mode === 'cpu' && game.state.turn !== game.player) return false;
     return !engineBusy;
   }
@@ -516,6 +529,43 @@
     w.postMessage(`position fen ${fen}`);
     w.postMessage(`go movetime ${lv.time}`);
   }
+
+  // ---------- Online (Teile in online.js und online-game.js) ----------
+  function openOnlineGame(row) {
+    selected = null;
+    game = { ...row.data, mode: 'online', onlineId: row.id, snaps: [] };
+    const me = user.id === row.white_id ? 'w' : 'b';
+    game.player = me;
+    game.opponent = me === 'w' ? row.black_name : row.white_name;
+    flipped = me === 'b';
+    startGame();
+    window.OnlineGame.enter(row);
+  }
+  function applyRemote(row) {
+    if (!game || game.onlineId !== row.id) return;
+    const d = row.data;
+    const same = JSON.stringify(d.state) === JSON.stringify(game.state) && JSON.stringify(d.over || null) === JSON.stringify(game.over || null);
+    if (same) return;
+    const opponentMoved = d.moves.length > game.moves.length && d.state.turn === game.player;
+    snapshot();
+    selected = null;
+    const wasOver = !!game.over;
+    const { snaps, opponent, player, onlineId } = game;
+    game = { ...d, mode: 'online', snaps, opponent, player, onlineId, over: d.over || null };
+    render();
+    if (opponentMoved) {
+      const st = game.over;
+      if (st) sounds.end(); else sounds.move();
+    }
+    if (game.over && !wasOver) showEnd(game.over);
+  }
+  window.SchachApp = {
+    sb, sounds, beep: () => sounds.move(),
+    getUser: () => user,
+    getGame: () => game,
+    showScreen: show,
+    openOnlineGame, applyRemote, showEnd,
+  };
 
   // ---------- Start ----------
   (async function init() {
