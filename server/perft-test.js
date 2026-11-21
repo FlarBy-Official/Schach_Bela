@@ -1,4 +1,4 @@
-const R = require('../public/rules.js');
+const R = require('../docs/rules.js');
 
 function fromFEN(fen) {
   const [pos, turn, cast, ep] = fen.split(' ');
