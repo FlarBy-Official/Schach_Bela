@@ -439,7 +439,7 @@
       if (sq === 4) { s.castling.bK = false; s.castling.bQ = false; }
     }
     s.ep = null;
-    game.moves.push('✨' + R.name(from) + '-' + R.name(i));
+    game.moves.push(R.name(from) + '-' + R.name(i));
     game.last = { from, to: i };
     if (!$('magic-double').checked) { s.turn = s.turn === 'w' ? 'b' : 'w'; if (s.turn === 'w') s.full++; }
     afterMagic(cap);
