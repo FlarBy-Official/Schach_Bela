@@ -1,0 +1,21 @@
+{
+  "name": "schach-bela",
+  "version": "1.0.0",
+  "description": "Schach für Bela",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "test": "node server/perft-test.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "UNLICENSED",
+  "type": "commonjs",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.119.2",
+    "express": "^5.3.0",
+    "express-session": "^1.19.0",
+    "stockfish": "^19.0.1"
+  },
+  "private": true
+}

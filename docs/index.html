@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Schach</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Anmelden -->
+  <main id="screen-auth" class="screen card">
+    <h1>♞ Schach</h1>
+    <div class="tabs">
+      <button id="tab-login" class="tab active" type="button">Einloggen</button>
+      <button id="tab-register" class="tab" type="button">Konto erstellen</button>
+    </div>
+    <form id="auth-form" autocomplete="on">
+      <label>Name <input id="auth-name" name="username" autocomplete="username" maxlength="20" required></label>
+      <label>Passwort <input id="auth-pass" name="password" type="password" autocomplete="current-password" required></label>
+      <p id="auth-hint" class="hint hidden">Name: 3 bis 20 Zeichen (Buchstaben, Zahlen, _). Passwort: mindestens 6 Zeichen.</p>
+      <p id="auth-error" class="error" role="alert"></p>
+      <button id="auth-submit" class="primary" type="submit">Einloggen</button>
+    </form>
+  </main>
+
+  <!-- Menü -->
+  <main id="screen-menu" class="screen card hidden">
+    <div class="topbar">
+      <span>Hallo, <strong id="menu-user"></strong>!</span>
+      <span>
+        <button id="menu-settings" type="button">⚙ Einstellungen</button>
+        <button id="menu-logout" type="button">Ausloggen</button>
+      </span>
+    </div>
+    <h1>Was möchtest du spielen?</h1>
+    <button id="btn-resume" class="primary hidden" type="button">▶ Spiel weiterspielen</button>
+    <button id="btn-local" type="button">👥 Zwei Spieler an einem Computer</button>
+    <div class="cpu-box">
+      <button id="btn-cpu" type="button">🤖 Gegen den Computer</button>
+      <label>Stufe
+        <select id="cpu-level">
+          <option value="easy">Leicht</option>
+          <option value="medium" selected>Mittel</option>
+          <option value="hard">Schwer</option>
+        </select>
+      </label>
+      <label>Ich spiele
+        <select id="cpu-color">
+          <option value="w" selected>Weiß</option>
+          <option value="b">Schwarz</option>
+          <option value="r">Zufall</option>
+        </select>
+      </label>
+    </div>
+    <button id="btn-online" type="button">🌍 Online spielen</button>
+    <p id="menu-note" class="hint"></p>
+  </main>
+
+  <!-- Spiel -->
+  <main id="screen-game" class="screen hidden">
+    <div class="game-layout">
+      <div class="board-wrap">
+        <div id="board" class="board" role="grid" aria-label="Schachbrett"></div>
+      </div>
+      <aside class="side card">
+        <div id="status" class="status"></div>
+        <ol id="moves" class="moves"></ol>
+        <div class="buttons">
+          <button id="g-flip" type="button">🔄 Brett drehen</button>
+          <button id="g-settings" type="button">⚙ Einstellungen</button>
+          <button id="g-new" type="button">Neues Spiel</button>
+          <button id="g-menu" type="button">Zum Menü</button>
+        </div>
+
+        <section id="magic" class="magic hidden">
+          <label class="switch"><input id="magic-on" type="checkbox"> ✨ Zauber-Modus</label>
+          <div id="magic-tools" class="hidden">
+            <label><input type="radio" name="tool" value="free" checked> Frei ziehen (alle Regeln aus)</label>
+            <label><input type="radio" name="tool" value="remove"> Figur wegnehmen</label>
+            <label><input type="radio" name="tool" value="add"> Figur hinstellen</label>
+            <div id="palette" class="palette hidden"></div>
+            <label><input id="magic-double" type="checkbox"> Zweimal hintereinander ziehen</label>
+            <div class="buttons">
+              <button id="magic-undo" type="button">↩ Zug zurück</button>
+              <button id="magic-turn" type="button">⇄ Anderer ist dran</button>
+            </div>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <dialog id="dlg-settings">
+    <form method="dialog">
+      <h2>Einstellungen</h2>
+      <label>Brett
+        <select id="set-theme"><option value="wood">Holz</option><option value="marble">Marmor</option></select>
+      </label>
+      <label><input id="set-letters" type="checkbox"> Anfangsbuchstabe auf der Figur</label>
+      <label><input id="set-dots" type="checkbox"> Punkte zeigen, wo man hingehen darf</label>
+      <label><input id="set-lastMove" type="checkbox"> Letzten Zug markieren</label>
+      <label><input id="set-checkRed" type="checkbox"> Schach in Rot zeigen</label>
+      <label><input id="set-sound" type="checkbox"> Töne</label>
+      <button class="primary">Fertig</button>
+    </form>
+  </dialog>
+
+  <dialog id="dlg-promo">
+    <form method="dialog">
+      <h2>Was soll aus dem Bauern werden?</h2>
+      <div id="promo-choices" class="promo"></div>
+    </form>
+  </dialog>
+
+  <dialog id="dlg-end">
+    <form method="dialog">
+      <h2 id="end-title"></h2>
+      <p id="end-text"></p>
+      <button class="primary">Okay</button>
+    </form>
+  </dialog>
+
+  <script src="vendor-supabase.js"></script>
+  <script src="rules.js"></script>
+  <script src="pieces.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
