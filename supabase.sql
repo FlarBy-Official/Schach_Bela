@@ -21,7 +21,9 @@ create policy "own games all" on public.games for all using (auth.uid() = user_i
 
 -- Nur settings darf der Benutzer ändern, nie is_owner oder name.
 revoke update on public.profiles from anon, authenticated;
+grant select on public.profiles to authenticated;
 grant update (settings) on public.profiles to authenticated;
+grant select, insert, update, delete on public.games to authenticated;
 create policy "own settings update" on public.profiles for update using (auth.uid() = id) with check (auth.uid() = id);
 
 -- Profil automatisch beim Registrieren anlegen (is_owner immer false)
