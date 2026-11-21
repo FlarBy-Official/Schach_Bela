@@ -15,7 +15,7 @@
   const SUPABASE_URL = 'https://bqpeitdgqmsbnfklgwas.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_U_eZLVd9Mf8-aNLV9j5pPQ_UqUtPpzI'; // öffentlicher Key, die Rechte regelt Row-Level-Security
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  const emailOf = (name) => `${name.toLowerCase()}@schach-bela.app`;
+  const emailOf = (name) => `schach.${name.toLowerCase()}@gmail.com`;
 
   async function profile() {
     const { data: { session } } = await sb.auth.getSession();
